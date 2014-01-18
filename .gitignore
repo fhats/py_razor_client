@@ -1,0 +1,4 @@
+.coverage
+*.egg
+*.egg-info
+*.py[co]

@@ -1,1 +1,1 @@
-# A Python library for speaking to the Razor API
+# A Python client for the Razor API
