@@ -5,7 +5,7 @@ python:
 # command to install dependencies
 install:
   - "pip install testify==0.5.2"  # TODO: make it so we can keep this in setup.py
-  - "pip install  --allow-external ."
+  - "pip install ."
   - "python setup.py test"
 # command to run tests
 script: make test
