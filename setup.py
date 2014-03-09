@@ -4,14 +4,6 @@ from setuptools import setup
 
 from py_razor_client.version import VERSION
 
-
-# Utility function to read the README file.
-# Used for the long_description.  It's nice, because now 1) we have a top level
-# README file and 2) it's easier to type in the README file than to put a raw
-# string in below ...
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
-
 setup(
     name="py_razor_client",
     version=VERSION,
@@ -20,9 +12,9 @@ setup(
     description=("A simple Python library for interacting with Razor"),
     license="MIT",
     keywords="razor razor-server imaging library",
-    url="http://packages.python.org/py_razor_client",
+    url="https://github.com/fhats/py_razor_client",
     packages=['py_razor_client', 'tests'],
-    long_description=read('README.md'),
+    long_description="A pure-python Razor client. See https://github.com/fhats/py_razor_client for more information.",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
