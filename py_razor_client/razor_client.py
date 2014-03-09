@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Contains a quick-and-dirty client for talking to a Razor server.
 
 Rather than enumerating an API that has lots of warning labels and stickers
@@ -30,7 +31,8 @@ class RazorClient(object):
     # necessary to fit in here, since arguments like iso-url can't be specified
     # as python keywords.
     ARG_TRANSFORMS = {
-        "iso_url": "iso-url"
+        "broker_type": "broker-type",
+        "iso_url": "iso-url",
     }
     API_PATH = "/api"  # It's less likely that this will change
     METHOD_TRANSFORMS = {
@@ -41,6 +43,8 @@ class RazorClient(object):
         self.hostname = hostname
         self.port = str(port)
         self._collection_urls = {}
+        self.collections = set()
+        self.commands = set()
 
         if not lazy_discovery:
             self.discover_methods()
@@ -95,6 +99,8 @@ class RazorClient(object):
 
         self._bind_method(collection_name, lambda *args, **kwargs: self._list_collection(collection_url, *args, **kwargs))
         self._bind_method(collection_singular, lambda *args, **kwargs: self._get_collection_item(collection_url, *args, **kwargs))
+        self.collections.add(collection_name)
+        self.collections.add(collection_singular)
 
     def _bind_command(self, command):
         command_name = command['name']
@@ -105,6 +111,7 @@ class RazorClient(object):
         command_name = self.sanitize_command_name(command_name)
 
         self._bind_method(command_name, partial(self._execute_command, command_url))
+        self.commands.add(command_name)
 
     def _bind_method(self, method_name, method):
         method_name = self.METHOD_TRANSFORMS.get(method_name, method_name)
@@ -113,9 +120,10 @@ class RazorClient(object):
     def _list_collection(self, url):
         return self.get_path(url)
 
-    def _get_collection_item(self, url, item):
-        item_path = '/'.join((url, item))
-        return self.get_path(item_path)
+    def _get_collection_item(self, url, *item):
+        item_path = '/'.join(item)
+        total_item_path = '/'.join((url, item_path))
+        return self.get_path(total_item_path)
 
     def _execute_command(self, url, **kwargs):
         for key in kwargs.keys():

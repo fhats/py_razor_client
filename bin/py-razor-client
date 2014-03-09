@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""A wrapper around RazorClient to allow it to be used as a standalone tool.
+
+Modeled after the official Razor client (puppetlabs/razor-client).
+"""
+from argparse import ArgumentParser
+import sys
+
+from py_razor_client import cli
+from py_razor_client.razor_client import RazorClient
+from py_razor_client.version import VERSION
+
+
+def create_parser():
+    parser = ArgumentParser(version=VERSION)
+    parser.add_argument("-c", "--config")
+    parser.add_argument("--hostname")
+    parser.add_argument("--port")
+    parser.add_argument("--url")
+    parser.add_argument("collection_or_command")
+    parser.add_argument("collection_item", nargs="?")
+    parser.add_argument("additional_args", nargs="*")
+    return parser
+
+
+if __name__ == "__main__":
+    parser = create_parser()
+    parser, added_args = cli.dynamicize_argparser(parser, sys.argv[1:])
+    args = parser.parse_args()
+
+    if args.url and (args.hostname or args.port):
+        parser.error("Options --hostname and --port are mutuall exclusive with --url")
+
+    config = cli.make_config(args)
+
+    client = RazorClient(config['hostname'], config['port'])
+
+    sanitary_name = client.sanitize_command_name(args.collection_or_command)
+    collection_or_command = getattr(client, sanitary_name)
+    collection_args = []
+    if args.collection_item:
+        collection_args.append(args.collection_item)
+    if args.additional_args:
+        collection_args.extend(args.additional_args)
+
+    print collection_or_command(*collection_args)

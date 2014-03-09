@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
 import os
 from setuptools import setup
+
+from py_razor_client.version import VERSION
 
 
 # Utility function to read the README file.
@@ -11,7 +14,7 @@ def read(fname):
 
 setup(
     name="py_razor_client",
-    version="0.1.0",
+    version=VERSION,
     author="Fred Hatfull",
     author_email="fred.hatfull@gmail.com",
     description=("A simple Python library for interacting with Razor"),
@@ -30,6 +33,7 @@ setup(
         "Topic :: System :: Installation/Setup",
     ],
     install_requires=[
+        "argparse == 1.2.1",
         "requests == 2.2.0",
     ],
     tests_require=[
