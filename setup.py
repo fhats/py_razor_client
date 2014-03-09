@@ -24,9 +24,11 @@ setup(
         "Topic :: System :: Systems Administration",
         "Topic :: System :: Installation/Setup",
     ],
+    scripts=['bin/py-razor-client'],
     install_requires=[
         "argparse >= 1.0.0",
         "requests == 2.2.0",
+        "pyyaml >= 3.0.0",
     ],
     tests_require=[
         "coverage == 3.7.1",
