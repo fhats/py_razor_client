@@ -249,14 +249,8 @@ class BindCollectionTest(RazorClientTestCase):
 
     @T.setup_teardown
     def mock_list_collection(self):
-        tgt = "py_razor_client.razor_client.RazorClient._list_collection"
+        tgt = "py_razor_client.razor_client.RazorClient._get_collection"
         with mock.patch(tgt) as self.mock_list_collection:
-            yield
-
-    @T.setup_teardown
-    def mock_get_collection_item(self):
-        tgt = "py_razor_client.razor_client.RazorClient._get_collection_item"
-        with mock.patch(tgt) as self.mock_get_collection_item:
             yield
 
     def test_bind_collection_vanilla(self):
@@ -269,45 +263,14 @@ class BindCollectionTest(RazorClientTestCase):
             "id": collection_id
         }
         expected_method = "nodes"
-        expected_singular = "node"
 
         self.razor_client._bind_collection(test_collection)
 
         actual_method = getattr(self.razor_client, expected_method, None)
-        actual_singular = getattr(self.razor_client, expected_singular, None)
         T.assert_not_equal(actual_method, None)
-        T.assert_not_equal(actual_singular, None)
 
         actual_method()
         self.mock_list_collection.assert_called_once_with(collection_id)
-
-        actual_singular()
-        self.mock_get_collection_item.assert_called_once_with(collection_id)
-
-    def test_bind_collection_replaces_policy_singular(self):
-        collection = "policies"
-        collection_id = "http://%s:%s/api/collections/%s" % (self.hostname,
-                                                             self.port,
-                                                             collection)
-        test_collection = {
-            "name": collection,
-            "id": collection_id
-        }
-        expected_method = "policies"
-        expected_singular = "policy"
-
-        self.razor_client._bind_collection(test_collection)
-
-        actual_method = getattr(self.razor_client, expected_method, None)
-        actual_singular = getattr(self.razor_client, expected_singular, None)
-        T.assert_not_equal(actual_method, None)
-        T.assert_not_equal(actual_singular, None)
-
-        actual_method()
-        self.mock_list_collection.assert_called_once_with(collection_id)
-
-        actual_singular()
-        self.mock_get_collection_item.assert_called_once_with(collection_id)
 
 
 class BindCommandTest(RazorClientTestCase):
@@ -359,15 +322,15 @@ class GetListCollectionTest(RazorClientTestCase):
             self.mock_get_path = mock_get_path
             yield
 
-    def test_list_collection(self):
+    def test_get_collection(self):
         test_url = mock.sentinel.url
-        self.razor_client._list_collection(test_url)
+        self.razor_client._get_collection(test_url)
         self.mock_get_path.assert_called_once_with(test_url)
 
     def test_get_collection_item(self):
         test_url = "/api"
         test_item = "item"
-        self.razor_client._get_collection_item(test_url, test_item)
+        self.razor_client._get_collection(test_url, test_item)
 
         expected_url = "/".join((test_url, test_item))
 

@@ -15,7 +15,7 @@ Example usage:
     client = RazorClient("example.com", 8080)
     client.repos()
     client.nodes()
-    client.node("node1")
+    client.nodes("node1")
     client.create_repo(name="test_repo", iso_url="http://example.com/img.iso")
 """
 from functools import partial
@@ -35,9 +35,6 @@ class RazorClient(object):
         "iso_url": "iso-url",
     }
     API_PATH = "/api"  # It's less likely that this will change
-    METHOD_TRANSFORMS = {
-        "policie": "policy"
-    }
 
     def __init__(self, hostname, port, lazy_discovery=False):
         self.hostname = hostname
@@ -94,13 +91,10 @@ class RazorClient(object):
 
     def _bind_collection(self, collection):
         collection_name = collection['name']
-        collection_singular = collection_name.rstrip('s')
         collection_url = collection['id']
 
-        self._bind_method(collection_name, lambda *args, **kwargs: self._list_collection(collection_url, *args, **kwargs))
-        self._bind_method(collection_singular, lambda *args, **kwargs: self._get_collection_item(collection_url, *args, **kwargs))
+        self._bind_method(collection_name, lambda *args, **kwargs: self._get_collection(collection_url, *args, **kwargs))
         self.collections.add(collection_name)
-        self.collections.add(collection_singular)
 
     def _bind_command(self, command):
         command_name = command['name']
@@ -114,15 +108,14 @@ class RazorClient(object):
         self.commands.add(command_name)
 
     def _bind_method(self, method_name, method):
-        method_name = self.METHOD_TRANSFORMS.get(method_name, method_name)
         setattr(self, method_name, method)
 
-    def _list_collection(self, url):
-        return self.get_path(url)
-
-    def _get_collection_item(self, url, *item):
-        item_path = '/'.join(item)
-        total_item_path = '/'.join((url, item_path))
+    def _get_collection(self, url, *item):
+        if item:
+            item_path = '/'.join(item)
+            total_item_path = '/'.join((url, item_path))
+        else:
+            total_item_path = url
         return self.get_path(total_item_path)
 
     def _execute_command(self, url, **kwargs):
