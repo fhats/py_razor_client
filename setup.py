@@ -33,7 +33,7 @@ setup(
         "Topic :: System :: Installation/Setup",
     ],
     install_requires=[
-        "argparse == 1.2.1",
+        "argparse >= 1.0.0",
         "requests == 2.2.0",
     ],
     tests_require=[
