@@ -2,6 +2,7 @@
 
 clean:
 	find . -name '*.pyc' -delete
+	rm -rf dist
 
 coverage:
 	coverage run `which testify` --verbose --summary tests
