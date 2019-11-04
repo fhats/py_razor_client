@@ -27,7 +27,7 @@ setup(
     scripts=['bin/py-razor-client'],
     install_requires=[
         "argparse >= 1.0.0",
-        "requests == 2.2.0",
+        "requests == 2.20.0",
         "pyyaml >= 3.0.0",
     ],
     tests_require=[
